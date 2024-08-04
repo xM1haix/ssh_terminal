@@ -1,0 +1,178 @@
+import 'package:flutter/material.dart';
+import 'package:ssh_terminal/nav.dart';
+
+import 'colors.dart';
+import 'db.dart';
+import 'future_builder.dart';
+import 'new_ssh.dart';
+import 'settings.dart';
+import 'terminal.dart';
+import 'terminal_view.dart';
+
+class SSHList extends StatefulWidget {
+  const SSHList({super.key});
+
+  @override
+  State<SSHList> createState() => _SSHListState();
+}
+
+class _SSHListState extends State<SSHList> {
+  late Future<List<TerminalData>> _future;
+
+  void _init() {
+    setState(() {
+      _future = getAllSshDetails();
+    });
+  }
+
+  void _delete(e) async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          "Are you sure you want to delete?",
+        ),
+        actions: [
+          TextButton(
+            child: const Text(
+              "Cancel",
+              style: TextStyle(
+                color: Colors.blue,
+              ),
+            ),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              "Delete",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    final x = await db();
+    await x.delete(
+      'ssh_details',
+      where: 'id = ?',
+      whereArgs: [e.id],
+    );
+    _init();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  void _onAdd() async {
+    final x = await nav(context, const NewSsh());
+    if (x == true) {
+      _init();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('SSH List'),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Settings(),
+              ),
+            ),
+            icon: const Icon(Icons.settings),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add',
+        splashColor: const Color(0xFF00FF00),
+        backgroundColor: Colors.black,
+        onPressed: _onAdd,
+        child: const Icon(
+          Icons.add,
+          color: Color(0xFF00FF00),
+        ),
+      ),
+      body: Container(
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: gray12,
+        ),
+        padding: const EdgeInsets.all(10),
+        child: CustomFutureBuilder(
+          future: _future,
+          success: (x) => x.isEmpty
+              ? const Center(child: Text('Nothing in here'))
+              : ListView.builder(
+                  itemCount: x.length,
+                  itemBuilder: (_, i) => Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.black,
+                      child: InkWell(
+                        splashColor: Colors.green,
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: () => nav(context, TerminalSSH(x[i])),
+                        child: Container(
+                          height: 72,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.terminal_outlined),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  x[i].name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () =>
+                                        nav(context, NewSsh(id: x[i].id)),
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => _delete(x[i]),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
