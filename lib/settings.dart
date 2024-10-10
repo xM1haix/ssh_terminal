@@ -17,37 +17,6 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   late bool _fingerPrint = false;
   @override
-  void initState() {
-    super.initState();
-    ToastContext().init(context);
-    _getPrefs();
-  }
-
-  void _getPrefs() async {
-    final p = await SharedPreferences.getInstance();
-    final auth = LocalAuthentication();
-    await p.setBool('fingerPrint',
-        await auth.canCheckBiometrics && await auth.isDeviceSupported());
-    setState(() {
-      _fingerPrint = p.getBool('fingerPrint') ?? false;
-    });
-  }
-
-  Future<bool> _getFingerPrint() async {
-    try {
-      return await LocalAuthentication().authenticate(
-        localizedReason: 'Check the fingerprint!',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-        ),
-      );
-    } on PlatformException catch (e) {
-      Toast.show(e.toString(), duration: 3, gravity: Toast.bottom);
-      return false;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
@@ -86,5 +55,36 @@ class _SettingsState extends State<Settings> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    ToastContext().init(context);
+    _getPrefs();
+  }
+
+  Future<bool> _getFingerPrint() async {
+    try {
+      return await LocalAuthentication().authenticate(
+        localizedReason: 'Check the fingerprint!',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+        ),
+      );
+    } on PlatformException catch (e) {
+      Toast.show(e.toString(), duration: 3, gravity: Toast.bottom);
+      return false;
+    }
+  }
+
+  void _getPrefs() async {
+    final p = await SharedPreferences.getInstance();
+    final auth = LocalAuthentication();
+    await p.setBool('fingerPrint',
+        await auth.canCheckBiometrics && await auth.isDeviceSupported());
+    setState(() {
+      _fingerPrint = p.getBool('fingerPrint') ?? false;
+    });
   }
 }

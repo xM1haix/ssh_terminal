@@ -4,12 +4,28 @@ import 'dart:convert';
 import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ssh_terminal/nav.dart';
 import 'package:xterm/xterm.dart';
 
 import 'colors.dart';
+import 'nav.dart';
 import 'terminal.dart';
 import 'virtual_keys.dart';
+
+void fakeKey() {
+  KeyUpEvent;
+}
+
+void simulateKeyPress(LogicalKeyboardKey key) {
+  // Create a key event
+  const keyEvent = KeyUpEvent(
+    physicalKey: PhysicalKeyboardKey(0x0007004f),
+    logicalKey: LogicalKeyboardKey(0x100000303),
+    timeStamp: Duration.zero,
+  );
+
+  // Dispatch the key event to the RawKeyboard
+  HardwareKeyboard.instance.handleKeyEvent(keyEvent);
+}
 
 class TerminalSSH extends StatefulWidget {
   final TerminalData x;
@@ -31,6 +47,49 @@ class _TerminalSSHState extends State<TerminalSSH> {
   );
   late SSHClient client;
   final _terminalController = TerminalController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () => _close(context),
+          icon: const Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        ),
+        backgroundColor: gray12,
+        title: Text(widget.x.name),
+        actions: [
+          const IconButton(
+            onPressed: fakeKey,
+            icon: Icon(Icons.arrow_right),
+          ),
+          VirtualKeyboardView(_keyboard),
+        ],
+      ),
+      body: KeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: (event) {
+          print(event);
+        },
+        child: TerminalView(
+          _terminal,
+          controller: _terminalController,
+          backgroundOpacity: 0,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _connectToServer();
+  }
 
   void _close(BuildContext context) {
     client.close();
@@ -69,65 +128,6 @@ class _TerminalSSHState extends State<TerminalSSH> {
       _terminal.write('Error connecting to server: $e\r\n');
     }
   }
-
-  @override
-  void initState() {
-    super.initState();
-    _connectToServer();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          onPressed: () => _close(context),
-          icon: const Icon(
-            Icons.close,
-            color: Colors.red,
-          ),
-        ),
-        backgroundColor: gray12,
-        title: Text(widget.x.name),
-        actions: [
-          const IconButton(
-            onPressed: fakeKey,
-            icon: Icon(Icons.arrow_right),
-          ),
-          VirtualKeyboardView(_keyboard),
-        ],
-      ),
-      body: KeyboardListener(
-        focusNode: _focusNode,
-        autofocus: true,
-        onKeyEvent: (event) {
-          print(event);
-        },
-        child: TerminalView(
-          _terminal,
-          controller: _terminalController,
-          backgroundOpacity: 0,
-        ),
-      ),
-    );
-  }
-}
-
-void fakeKey() {
-  KeyUpEvent;
-}
-
-void simulateKeyPress(LogicalKeyboardKey key) {
-  // Create a key event
-  const keyEvent = KeyUpEvent(
-    physicalKey: PhysicalKeyboardKey(0x0007004f),
-    logicalKey: LogicalKeyboardKey(0x100000303),
-    timeStamp: Duration.zero,
-  );
-
-  // Dispatch the key event to the RawKeyboard
-  HardwareKeyboard.instance.handleKeyEvent(keyEvent);
 }
 
 // void simulateKeyRelease(LogicalKeyboardKey key) {

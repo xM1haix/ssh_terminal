@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 
+enum CustomKey { arrowRight }
+
 class CustomKeyEvent extends KeyUpEvent {
   const CustomKeyEvent({
     required super.physicalKey,
@@ -13,10 +15,4 @@ class CustomKeyEvent extends KeyUpEvent {
             timeStamp: Duration.zero,
           ),
       };
-}
-
-enum CustomKey { arrowRight }
-
-s() {
-  KeyUpEvent;
 }

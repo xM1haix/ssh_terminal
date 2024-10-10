@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ssh_terminal/db.dart';
-import 'package:ssh_terminal/future_builder.dart';
-import 'package:ssh_terminal/nav.dart';
-import 'package:ssh_terminal/terminal.dart';
 
 import 'colors.dart';
+import 'db.dart';
+import 'future_builder.dart';
+import 'nav.dart';
+import 'terminal.dart';
 
 class NewSsh extends StatefulWidget {
   final int? id;
@@ -15,6 +15,21 @@ class NewSsh extends StatefulWidget {
   State<NewSsh> createState() => _NewSshState();
 }
 
+class _InputData {
+  final TextEditingController controller;
+  final String name;
+  final bool isPort;
+  final Widget? hiden;
+  final bool isHide;
+  const _InputData(
+    this.name,
+    this.controller, {
+    this.isPort = false,
+    this.isHide = false,
+    this.hiden,
+  });
+}
+
 class _NewSshState extends State<NewSsh> {
   final _name = TextEditingController(),
       _host = TextEditingController(),
@@ -22,32 +37,41 @@ class _NewSshState extends State<NewSsh> {
       _username = TextEditingController(),
       _password = TextEditingController();
   bool _isHide = true;
+  late Future<TerminalData>? _future;
 
-  void _save(BuildContext context) async {
-    final ssh = {
-      'name': _name.text,
-      'host': _host.text,
-      'port': int.parse(_port.text),
-      'username': _username.text,
-      'password': _password.text,
-    };
-    final x = await db();
-    await (widget.id == null
-        ? x.insert(
-            'ssh_details',
-            ssh,
-          )
-        : x.update(
-            'ssh_details',
-            ssh,
-            where: 'id = ?',
-            whereArgs: [widget.id],
-          ));
-    if (!context.mounted) return;
-    back(context, true);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          TextButton.icon(
+            onPressed: () => _save(context),
+            icon: const Icon(Icons.save_alt),
+            label: const Text('Save'),
+          ),
+        ],
+        centerTitle: true,
+        title: Text(
+          widget.id == null ? 'Add a new SSH' : 'Edit the SSH Details',
+        ),
+      ),
+      body: Container(
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: gray12,
+        ),
+        padding: const EdgeInsets.all(10),
+        child: widget.id == null
+            ? _body()
+            : CustomFutureBuilder(
+                future: _future!,
+                success: (x) => _body(),
+              ),
+      ),
+    );
   }
 
-  late Future<TerminalData>? _future;
   @override
   void initState() {
     super.initState();
@@ -110,51 +134,27 @@ class _NewSshState extends State<NewSsh> {
             )
             .toList(),
       );
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          TextButton.icon(
-            onPressed: () => _save(context),
-            icon: const Icon(Icons.save_alt),
-            label: const Text('Save'),
-          ),
-        ],
-        centerTitle: true,
-        title: Text(
-          widget.id == null ? 'Add a new SSH' : 'Edit the SSH Details',
-        ),
-      ),
-      body: Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: gray12,
-        ),
-        padding: const EdgeInsets.all(10),
-        child: widget.id == null
-            ? _body()
-            : CustomFutureBuilder(
-                future: _future!,
-                success: (x) => _body(),
-              ),
-      ),
-    );
+  void _save(BuildContext context) async {
+    final ssh = {
+      'name': _name.text,
+      'host': _host.text,
+      'port': int.parse(_port.text),
+      'username': _username.text,
+      'password': _password.text,
+    };
+    final x = await db();
+    await (widget.id == null
+        ? x.insert(
+            'ssh_details',
+            ssh,
+          )
+        : x.update(
+            'ssh_details',
+            ssh,
+            where: 'id = ?',
+            whereArgs: [widget.id],
+          ));
+    if (!context.mounted) return;
+    back(context, true);
   }
-}
-
-class _InputData {
-  final TextEditingController controller;
-  final String name;
-  final bool isPort;
-  final Widget? hiden;
-  final bool isHide;
-  const _InputData(
-    this.name,
-    this.controller, {
-    this.isPort = false,
-    this.isHide = false,
-    this.hiden,
-  });
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ssh_terminal/nav.dart';
 
 import 'colors.dart';
 import 'db.dart';
 import 'future_builder.dart';
+import 'nav.dart';
 import 'new_ssh.dart';
 import 'settings.dart';
 import 'terminal.dart';
@@ -19,64 +19,6 @@ class SSHList extends StatefulWidget {
 class _SSHListState extends State<SSHList> {
   late Future<List<TerminalData>> _future;
 
-  void _init() {
-    setState(() {
-      _future = getAllSshDetails();
-    });
-  }
-
-  void _delete(e) async {
-    final confirm = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          "Are you sure you want to delete?",
-        ),
-        actions: [
-          TextButton(
-            child: const Text(
-              "Cancel",
-              style: TextStyle(
-                color: Colors.blue,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context, false),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              "Delete",
-              style: TextStyle(
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (confirm != true) return;
-    final x = await db();
-    await x.delete(
-      'ssh_details',
-      where: 'id = ?',
-      whereArgs: [e.id],
-    );
-    _init();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  void _onAdd() async {
-    final x = await nav(context, const NewSsh());
-    if (x == true) {
-      _init();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,12 +27,7 @@ class _SSHListState extends State<SSHList> {
         title: const Text('SSH List'),
         actions: [
           IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Settings(),
-              ),
-            ),
+            onPressed: () => nav(context, const Settings()),
             icon: const Icon(Icons.settings),
           ),
         ],
@@ -174,5 +111,58 @@ class _SSHListState extends State<SSHList> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  void _delete(e) async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          "Are you sure you want to delete?",
+        ),
+        actions: [
+          TextButton(
+            child: const Text(
+              "Cancel",
+              style: TextStyle(
+                color: Colors.blue,
+              ),
+            ),
+            onPressed: () => back(context, false),
+          ),
+          TextButton(
+            onPressed: () => back(context, true),
+            child: const Text(
+              "Delete",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    final x = await db();
+    await x.delete(
+      'ssh_details',
+      where: 'id = ?',
+      whereArgs: [e.id],
+    );
+    _init();
+  }
+
+  void _init() => setState(() {
+        _future = getAllSshDetails();
+      });
+  void _onAdd() async {
+    final x = await nav(context, const NewSsh());
+    if (x == true) _init();
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+void back(BuildContext context, [dynamic x]) => Navigator.pop(context, x);
+
 Future nav(BuildContext context, Widget location,
     [bool replace = false]) async {
   final x = PageRouteBuilder(
@@ -12,5 +14,3 @@ Future nav(BuildContext context, Widget location,
       ? Navigator.pushReplacement(context, x)
       : Navigator.push(context, x));
 }
-
-void back(BuildContext context, [dynamic x]) => Navigator.pop(context, x);
