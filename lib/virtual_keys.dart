@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:xterm/xterm.dart';
+import "package:flutter/material.dart";
+import "package:xterm/xterm.dart";
 
 class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
-  final TerminalInputHandler _inputHandler;
-  bool _ctrl = false;
-  bool _tab = false;
-  bool _shift = false;
-  bool _alt = false;
-
   VirtualKeyboard(this._inputHandler);
+  final TerminalInputHandler _inputHandler;
+  var _ctrl = false;
+  var _tab = false;
+  var _shift = false;
+
+  var _alt = false;
   bool get alt => _alt;
   set alt(bool value) {
     if (_alt != value) {
@@ -43,18 +43,19 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
   }
 
   @override
-  String? call(TerminalKeyboardEvent event) =>
-      _inputHandler.call(event.copyWith(
-        ctrl: event.ctrl || _ctrl,
-        shift: event.shift || _shift,
-        alt: event.alt || _alt,
-        key: _tab ? TerminalKey.tab : event.key,
-      ));
+  String? call(TerminalKeyboardEvent event) => _inputHandler.call(
+        event.copyWith(
+          ctrl: event.ctrl || _ctrl,
+          shift: event.shift || _shift,
+          alt: event.alt || _alt,
+          key: _tab ? TerminalKey.tab : event.key,
+        ),
+      );
 }
 
 class VirtualKeyboardView extends StatelessWidget {
-  final VirtualKeyboard keyboard;
   const VirtualKeyboardView(this.keyboard, {super.key});
+  final VirtualKeyboard keyboard;
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
         animation: keyboard,
@@ -69,23 +70,19 @@ class VirtualKeyboardView extends StatelessWidget {
             switch (index) {
               case 0:
                 keyboard.ctrl = !keyboard.ctrl;
-                break;
               case 1:
                 keyboard.alt = !keyboard.alt;
-                break;
               case 2:
                 keyboard.shift = !keyboard.shift;
-                break;
               case 3:
                 keyboard.tab = !keyboard.tab;
-                break;
             }
           },
           children: const [
-            Text('Ctrl'),
-            Text('Alt'),
-            Text('Shift'),
-            Text('Tab'),
+            Text("Ctrl"),
+            Text("Alt"),
+            Text("Shift"),
+            Text("Tab"),
           ],
         ),
       );

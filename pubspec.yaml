@@ -5,19 +5,19 @@ version: 1.0.0+1
 environment:
   sdk: '>=3.4.4 <4.0.0'
 dependencies:
+  dartssh2: ^2.8.2
   flutter:
     sdk: flutter
-  path: ^1.9.0
-  sqflite: ^2.3.3+1
-  shared_preferences: ^2.3.1
   local_auth: ^2.2.0
-  toast: ^0.3.0
-  dartssh2: ^2.8.2
-  xterm: ^4.0.0
+  path: ^1.9.0
+  shared_preferences: ^2.3.1
+  sqflite: ^2.3.3+1
   sqflite_common_ffi: ^2.3.3+1
+  toast: ^0.3.0
+  xterm: ^4.0.0
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
 flutter:
   uses-material-design: true

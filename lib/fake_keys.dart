@@ -1,4 +1,4 @@
-import 'package:flutter/services.dart';
+import "package:flutter/services.dart";
 
 enum CustomKey { arrowRight }
 
@@ -10,8 +10,8 @@ class CustomKeyEvent extends KeyUpEvent {
   });
   factory CustomKeyEvent.customKeys(CustomKey e) => switch (e) {
         CustomKey.arrowRight => const CustomKeyEvent(
-            physicalKey: PhysicalKeyboardKey(0x0007004f),
-            logicalKey: LogicalKeyboardKey(0x100000303),
+            physicalKey: PhysicalKeyboardKey.arrowRight,
+            logicalKey: LogicalKeyboardKey.arrowRight,
             timeStamp: Duration.zero,
           ),
       };

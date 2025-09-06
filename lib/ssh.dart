@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
-
-import 'colors.dart';
-import 'db.dart';
-import 'future_builder.dart';
-import 'nav.dart';
-import 'new_ssh.dart';
-import 'settings.dart';
-import 'terminal.dart';
-import 'terminal_view.dart';
+import "package:flutter/material.dart";
+import "package:ssh_terminal/colors.dart";
+import "package:ssh_terminal/db.dart";
+import "package:ssh_terminal/future_builder.dart";
+import "package:ssh_terminal/nav.dart";
+import "package:ssh_terminal/new_ssh.dart";
+import "package:ssh_terminal/settings.dart";
+import "package:ssh_terminal/terminal.dart";
+import "package:ssh_terminal/terminal_view.dart";
 
 class SSHList extends StatefulWidget {
   const SSHList({super.key});
@@ -24,7 +23,7 @@ class _SSHListState extends State<SSHList> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('SSH List'),
+        title: const Text("SSH List"),
         actions: [
           IconButton(
             onPressed: () => nav(context, const Settings()),
@@ -33,7 +32,7 @@ class _SSHListState extends State<SSHList> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Add',
+        tooltip: "Add",
         splashColor: const Color(0xFF00FF00),
         backgroundColor: Colors.black,
         onPressed: _onAdd,
@@ -52,7 +51,7 @@ class _SSHListState extends State<SSHList> {
         child: CustomFutureBuilder(
           future: _future,
           success: (x) => x.isEmpty
-              ? const Center(child: Text('Nothing in here'))
+              ? const Center(child: Text("Nothing in here"))
               : ListView.builder(
                   itemCount: x.length,
                   itemBuilder: (_, i) => Padding(
@@ -119,7 +118,7 @@ class _SSHListState extends State<SSHList> {
     _init();
   }
 
-  void _delete(e) async {
+  Future<void> _delete(e) async {
     final confirm = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -148,11 +147,13 @@ class _SSHListState extends State<SSHList> {
         ],
       ),
     );
-    if (confirm != true) return;
+    if (confirm != true) {
+      return;
+    }
     final x = await db();
     await x.delete(
-      'ssh_details',
-      where: 'id = ?',
+      "ssh_details",
+      where: "id = ?",
       whereArgs: [e.id],
     );
     _init();
@@ -161,8 +162,10 @@ class _SSHListState extends State<SSHList> {
   void _init() => setState(() {
         _future = getAllSshDetails();
       });
-  void _onAdd() async {
+  Future<void> _onAdd() async {
     final x = await nav(context, const NewSsh());
-    if (x == true) _init();
+    if (x == true) {
+      _init();
+    }
   }
 }

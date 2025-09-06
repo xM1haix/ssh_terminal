@@ -1,26 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'colors.dart';
-import 'db.dart';
-import 'future_builder.dart';
-import 'nav.dart';
-import 'terminal.dart';
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:ssh_terminal/colors.dart";
+import "package:ssh_terminal/db.dart";
+import "package:ssh_terminal/future_builder.dart";
+import "package:ssh_terminal/nav.dart";
+import "package:ssh_terminal/terminal.dart";
 
 class NewSsh extends StatefulWidget {
-  final int? id;
   const NewSsh({this.id, super.key});
+  final int? id;
 
   @override
   State<NewSsh> createState() => _NewSshState();
 }
 
 class _InputData {
-  final TextEditingController controller;
-  final String name;
-  final bool isPort;
-  final Widget? hiden;
-  final bool isHide;
   const _InputData(
     this.name,
     this.controller, {
@@ -28,15 +22,20 @@ class _InputData {
     this.isHide = false,
     this.hiden,
   });
+  final TextEditingController controller;
+  final String name;
+  final bool isPort;
+  final Widget? hiden;
+  final bool isHide;
 }
 
 class _NewSshState extends State<NewSsh> {
-  final _name = TextEditingController(),
-      _host = TextEditingController(),
-      _port = TextEditingController(),
-      _username = TextEditingController(),
-      _password = TextEditingController();
-  bool _isHide = true;
+  final _name = TextEditingController();
+  final _host = TextEditingController();
+  final _port = TextEditingController();
+  final _username = TextEditingController();
+  final _password = TextEditingController();
+  var _isHide = true;
   late Future<TerminalData>? _future;
 
   @override
@@ -47,12 +46,12 @@ class _NewSshState extends State<NewSsh> {
           TextButton.icon(
             onPressed: () => _save(context),
             icon: const Icon(Icons.save_alt),
-            label: const Text('Save'),
+            label: const Text("Save"),
           ),
         ],
         centerTitle: true,
         title: Text(
-          widget.id == null ? 'Add a new SSH' : 'Edit the SSH Details',
+          widget.id == null ? "Add a new SSH" : "Edit the SSH Details",
         ),
       ),
       body: Container(
@@ -91,12 +90,12 @@ class _NewSshState extends State<NewSsh> {
 
   Widget _body() => ListView(
         children: [
-          _InputData('Name', _name),
-          _InputData('Host', _host),
-          _InputData('Port', _port, isPort: true),
-          _InputData('Username', _username),
+          _InputData("Name", _name),
+          _InputData("Host", _host),
+          _InputData("Port", _port, isPort: true),
+          _InputData("Username", _username),
           _InputData(
-            'password',
+            "password",
             _password,
             isHide: _isHide,
             hiden: Material(
@@ -115,7 +114,7 @@ class _NewSshState extends State<NewSsh> {
         ]
             .map(
               (e) => Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: TextField(
                   obscureText: e.isHide,
                   keyboardType: e.isPort ? TextInputType.number : null,
@@ -134,27 +133,29 @@ class _NewSshState extends State<NewSsh> {
             )
             .toList(),
       );
-  void _save(BuildContext context) async {
+  Future<void> _save(BuildContext context) async {
     final ssh = {
-      'name': _name.text,
-      'host': _host.text,
-      'port': int.parse(_port.text),
-      'username': _username.text,
-      'password': _password.text,
+      "name": _name.text,
+      "host": _host.text,
+      "port": int.parse(_port.text),
+      "username": _username.text,
+      "password": _password.text,
     };
     final x = await db();
     await (widget.id == null
         ? x.insert(
-            'ssh_details',
+            "ssh_details",
             ssh,
           )
         : x.update(
-            'ssh_details',
+            "ssh_details",
             ssh,
-            where: 'id = ?',
+            where: "id = ?",
             whereArgs: [widget.id],
           ));
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      return;
+    }
     back(context, true);
   }
 }

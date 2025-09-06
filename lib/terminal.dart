@@ -1,27 +1,23 @@
-import 'db.dart';
+import "package:ssh_terminal/db.dart";
 
 Future<List<TerminalData>> getAllSshDetails() async =>
-    (await (await db()).query('ssh_details'))
-        .map((e) => TerminalData.fromJson(e))
+    (await (await db()).query("ssh_details"))
+        .map(TerminalData.fromJson)
         .toList();
 
 Future<TerminalData> loadSshDetails(int id) async {
   final x = await (await db()).query(
-    'ssh_details',
-    where: 'id = ?',
+    "ssh_details",
+    where: "id = ?",
     whereArgs: [id],
   );
-  if (x.isEmpty) throw "No data found";
+  if (x.isEmpty) {
+    throw Exception("No data found");
+  }
   return TerminalData.fromJson(x.first);
 }
 
 class TerminalData {
-  int id;
-  final String name;
-  final String host;
-  final int port;
-  final String username;
-  final String password;
   TerminalData({
     required this.id,
     required this.name,
@@ -32,12 +28,12 @@ class TerminalData {
   });
   factory TerminalData.fromJson(Map<String, dynamic> x) => switch (x) {
         {
-          "id": int id,
-          "name": String name,
-          "host": String host,
-          "port": int port,
-          "username": String username,
-          "password": String password,
+          "id": final int id,
+          "name": final String name,
+          "host": final String host,
+          "port": final int port,
+          "username": final String username,
+          "password": final String password,
         } =>
           TerminalData(
             id: id,
@@ -47,6 +43,12 @@ class TerminalData {
             username: username,
             password: password,
           ),
-        _ => throw "Invalid format: $x",
+        _ => throw Exception("Invalid format: $x"),
       };
+  int id;
+  final String name;
+  final String host;
+  final int port;
+  final String username;
+  final String password;
 }

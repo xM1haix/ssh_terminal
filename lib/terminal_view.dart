@@ -1,25 +1,20 @@
-import 'dart:async';
-import 'dart:convert';
+import "dart:async";
+import "dart:convert";
 
-import 'package:dartssh2/dartssh2.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:xterm/xterm.dart';
-
-import 'colors.dart';
-import 'nav.dart';
-import 'terminal.dart';
-import 'virtual_keys.dart';
-
-void fakeKey() {
-  KeyUpEvent;
-}
+import "package:dartssh2/dartssh2.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:ssh_terminal/colors.dart";
+import "package:ssh_terminal/nav.dart";
+import "package:ssh_terminal/terminal.dart";
+import "package:ssh_terminal/virtual_keys.dart";
+import "package:xterm/xterm.dart";
 
 void simulateKeyPress(LogicalKeyboardKey key) {
   // Create a key event
   const keyEvent = KeyUpEvent(
-    physicalKey: PhysicalKeyboardKey(0x0007004f),
-    logicalKey: LogicalKeyboardKey(0x100000303),
+    physicalKey: PhysicalKeyboardKey.arrowRight,
+    logicalKey: LogicalKeyboardKey.arrowRight,
     timeStamp: Duration.zero,
   );
 
@@ -28,12 +23,12 @@ void simulateKeyPress(LogicalKeyboardKey key) {
 }
 
 class TerminalSSH extends StatefulWidget {
-  final TerminalData x;
-
   const TerminalSSH(
     this.x, {
     super.key,
   });
+
+  final TerminalData x;
 
   @override
   State<TerminalSSH> createState() => _TerminalSSHState();
@@ -64,7 +59,7 @@ class _TerminalSSHState extends State<TerminalSSH> {
         title: Text(widget.x.name),
         actions: [
           const IconButton(
-            onPressed: fakeKey,
+            onPressed: null,
             icon: Icon(Icons.arrow_right),
           ),
           VirtualKeyboardView(_keyboard),
@@ -73,9 +68,7 @@ class _TerminalSSHState extends State<TerminalSSH> {
       body: KeyboardListener(
         focusNode: _focusNode,
         autofocus: true,
-        onKeyEvent: (event) {
-          print(event);
-        },
+        onKeyEvent: print,
         child: TerminalView(
           _terminal,
           controller: _terminalController,
@@ -88,7 +81,7 @@ class _TerminalSSHState extends State<TerminalSSH> {
   @override
   void initState() {
     super.initState();
-    _connectToServer();
+    unawaited(_connectToServer());
   }
 
   void _close(BuildContext context) {
@@ -97,7 +90,7 @@ class _TerminalSSHState extends State<TerminalSSH> {
   }
 
   Future<void> _connectToServer() async {
-    _terminal.write('Connecting...\r\n');
+    _terminal.write("Connecting...\r\n");
     try {
       client = SSHClient(
         await SSHSocket.connect(widget.x.host, widget.x.port),
@@ -113,8 +106,7 @@ class _TerminalSSHState extends State<TerminalSSH> {
       );
       _terminal.buffer.clear();
       _terminal.buffer.setCursor(0, 0);
-      _terminal.onResize = (width, height, pixelWidth, pixelHeight) =>
-          session.resizeTerminal(width, height, pixelWidth, pixelHeight);
+      _terminal.onResize = session.resizeTerminal;
       _terminal.onOutput = (data) => session.write(utf8.encode(data));
       session.stdout
           .cast<List<int>>()
@@ -125,7 +117,7 @@ class _TerminalSSHState extends State<TerminalSSH> {
           .transform(const Utf8Decoder())
           .listen(_terminal.write);
     } catch (e) {
-      _terminal.write('Error connecting to server: $e\r\n');
+      _terminal.write("Error connecting to server: $e\r\n");
     }
   }
 }

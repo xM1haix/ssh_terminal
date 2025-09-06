@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:local_auth/local_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
+import "dart:async";
 
-import 'colors.dart';
-import 'toast.dart';
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:local_auth/local_auth.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:ssh_terminal/colors.dart";
+import "package:ssh_terminal/toast.dart";
+import "package:toast/toast.dart";
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -15,14 +16,14 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  late bool _fingerPrint = false;
+  late var _fingerPrint = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Settings'),
+        title: const Text("Settings"),
       ),
       body: Container(
         margin: const EdgeInsets.all(10),
@@ -35,17 +36,21 @@ class _SettingsState extends State<Settings> {
           children: [
             if (_fingerPrint)
               SwitchListTile(
-                activeColor: Colors.blue,
-                title: const Text('Unlock using fingerprint'),
+                activeThumbColor: Colors.blue,
+                title: const Text("Unlock using fingerprint"),
                 value: _fingerPrint,
                 onChanged: (value) async {
                   try {
                     final x = await _getFingerPrint();
-                    if (x != true) throw "Finger print failed";
+                    if (!x) {
+                      throw Exception("Finger print failed");
+                    }
                     setState(() => _fingerPrint = value);
                     final p = await SharedPreferences.getInstance();
-                    final s = await p.setBool('fingerPrint', _fingerPrint);
-                    if (s != true) throw "Failed to save";
+                    final s = await p.setBool("fingerPrint", _fingerPrint);
+                    if (!s) {
+                      throw Exception("Failed to save");
+                    }
                   } catch (e) {
                     toast(e.toString());
                   }
@@ -61,30 +66,32 @@ class _SettingsState extends State<Settings> {
   void initState() {
     super.initState();
     ToastContext().init(context);
-    _getPrefs();
+    unawaited(_getPrefs());
   }
 
   Future<bool> _getFingerPrint() async {
     try {
       return await LocalAuthentication().authenticate(
-        localizedReason: 'Check the fingerprint!',
+        localizedReason: "Check the fingerprint!",
         options: const AuthenticationOptions(
           biometricOnly: true,
         ),
       );
     } on PlatformException catch (e) {
-      Toast.show(e.toString(), duration: 3, gravity: Toast.bottom);
+      Toast.show(e.toString(), duration: 3);
       return false;
     }
   }
 
-  void _getPrefs() async {
+  Future<void> _getPrefs() async {
     final p = await SharedPreferences.getInstance();
     final auth = LocalAuthentication();
-    await p.setBool('fingerPrint',
-        await auth.canCheckBiometrics && await auth.isDeviceSupported());
+    await p.setBool(
+      "fingerPrint",
+      await auth.canCheckBiometrics && await auth.isDeviceSupported(),
+    );
     setState(() {
-      _fingerPrint = p.getBool('fingerPrint') ?? false;
+      _fingerPrint = p.getBool("fingerPrint") ?? false;
     });
   }
 }
