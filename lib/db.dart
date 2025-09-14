@@ -4,6 +4,7 @@ import "dart:io";
 import "package:path/path.dart";
 import "package:sqflite_common_ffi/sqflite_ffi.dart";
 
+///[Future] of [Database] which init the [db]
 Future<Database> db({FutureOr<void> Function(Database, int)? onCreate}) async {
   if (Platform.isWindows || Platform.isLinux) {
     return databaseFactoryFfi.openDatabase(

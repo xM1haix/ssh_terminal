@@ -5,7 +5,9 @@ import "package:ssh_terminal/future_builder.dart";
 import "package:ssh_terminal/nav.dart";
 import "package:ssh_terminal/ssh.dart";
 
+///Splash Screen
 class SplashScreen extends StatefulWidget {
+  ///Splash Screen
   const SplashScreen({super.key});
   @override
   State<SplashScreen> createState() => _SplashScreenState();

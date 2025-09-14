@@ -8,9 +8,10 @@ import "package:ssh_terminal/colors.dart";
 import "package:ssh_terminal/toast.dart";
 import "package:toast/toast.dart";
 
+///Settings page
 class Settings extends StatefulWidget {
+  ///
   const Settings({super.key});
-
   @override
   State<Settings> createState() => _SettingsState();
 }

@@ -1,12 +1,20 @@
 import "package:flutter/material.dart";
 
+///Reusable and shorter [FutureBuilder] based [T]
 class CustomFutureBuilder<T> extends StatelessWidget {
+  ///It requires the [future] like the [FutureBuilder]
+  ///And the [success] which reprent only the
+  ///[success] case for the future state
   const CustomFutureBuilder({
     required this.future,
     required this.success,
     super.key,
   });
+
+  ///[Future] of [T] which is the main "action"
   final Future<T> future;
+
+  ///Function of [T] which is building the [success] [Widget]
   final Widget Function(T) success;
 
   @override

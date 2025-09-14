@@ -1,7 +1,9 @@
 import "package:flutter/material.dart";
 import "package:xterm/xterm.dart";
 
+///
 class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
+  ///
   VirtualKeyboard(this._inputHandler);
   final TerminalInputHandler _inputHandler;
   var _ctrl = false;
@@ -9,7 +11,11 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
   var _shift = false;
 
   var _alt = false;
+
+  ///get the value of [_ctrl]
   bool get alt => _alt;
+
+  ///Set the [_ctrl] the [notifyListeners]
   set alt(bool value) {
     if (_alt != value) {
       _alt = value;
@@ -17,7 +23,10 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
     }
   }
 
+  ///get the value of [_ctrl]
   bool get ctrl => _ctrl;
+
+  ///Set the [_ctrl] the [notifyListeners]
   set ctrl(bool value) {
     if (_ctrl != value) {
       _ctrl = value;
@@ -25,8 +34,10 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
     }
   }
 
+  ///get the value of [_ctrl]
   bool get shift => _shift;
 
+  ///Set the [_ctrl] the [notifyListeners]
   set shift(bool value) {
     if (_shift != value) {
       _shift = value;
@@ -34,7 +45,10 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
     }
   }
 
+  ///get the value of [_ctrl]
   bool get tab => _tab;
+
+  ///Set the [_ctrl] the [notifyListeners]
   set tab(bool value) {
     if (_tab != value) {
       _tab = value;
@@ -53,8 +67,12 @@ class VirtualKeyboard extends TerminalInputHandler with ChangeNotifier {
       );
 }
 
+///UI for Virtual key
 class VirtualKeyboardView extends StatelessWidget {
+  ///
   const VirtualKeyboardView(this.keyboard, {super.key});
+
+  ///The [VirtualKeyboard]
   final VirtualKeyboard keyboard;
   @override
   Widget build(BuildContext context) => AnimatedBuilder(

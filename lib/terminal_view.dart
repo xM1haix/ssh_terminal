@@ -10,6 +10,7 @@ import "package:ssh_terminal/terminal.dart";
 import "package:ssh_terminal/virtual_keys.dart";
 import "package:xterm/xterm.dart";
 
+///simulate a Phisical key event
 void simulateKeyPress(LogicalKeyboardKey key) {
   // Create a key event
   const keyEvent = KeyUpEvent(
@@ -22,12 +23,15 @@ void simulateKeyPress(LogicalKeyboardKey key) {
   HardwareKeyboard.instance.handleKeyEvent(keyEvent);
 }
 
+///UI for terminal
 class TerminalSSH extends StatefulWidget {
+  ///Requires the [TerminalData]
   const TerminalSSH(
     this.x, {
     super.key,
   });
 
+  ///[TerminalData] which have all required info
   final TerminalData x;
 
   @override

@@ -6,8 +6,12 @@ import "package:ssh_terminal/future_builder.dart";
 import "package:ssh_terminal/nav.dart";
 import "package:ssh_terminal/terminal.dart";
 
+///Page which create or update a ssh entry
 class NewSsh extends StatefulWidget {
+  ///If the id is given it will show the UI for update
   const NewSsh({this.id, super.key});
+
+  ///The id of the edited ssh entry
   final int? id;
 
   @override

@@ -8,7 +8,11 @@ import "package:ssh_terminal/settings.dart";
 import "package:ssh_terminal/terminal.dart";
 import "package:ssh_terminal/terminal_view.dart";
 
+/// Page which shows all the SSH as a [List] and give options to
+/// edit, delete or create a new SSH also there is the [Icons.settings]
+/// button which navigates to [Settings] page
 class SSHList extends StatefulWidget {
+  ///
   const SSHList({super.key});
 
   @override
@@ -118,7 +122,7 @@ class _SSHListState extends State<SSHList> {
     _init();
   }
 
-  Future<void> _delete(e) async {
+  Future<void> _delete(TerminalData e) async {
     final confirm = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
