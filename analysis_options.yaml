@@ -8,7 +8,6 @@ linter:
     - always_use_package_imports
     - annotate_redeclares
     - avoid_annotating_with_dynamic
-    - public_member_api_docs
     - avoid_bool_literals_in_conditional_expressions
     - avoid_classes_with_only_static_members
     - avoid_equals_and_hash_code_on_mutable_classes
