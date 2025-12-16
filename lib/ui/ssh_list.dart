@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:ssh_terminal/colors.dart";
 import "package:ssh_terminal/functions/db.dart";
+import "package:ssh_terminal/functions/local_auth.dart";
 import "package:ssh_terminal/functions/nav.dart";
 import "package:ssh_terminal/ui/new_ssh.dart";
 import "package:ssh_terminal/ui/settings.dart";
@@ -28,7 +29,12 @@ class _SSHListState extends State<SSHList> {
         centerTitle: true,
         title: const Text("SSH List"),
         actions: [
-          IconButton(onPressed: _init, icon: const Icon(Icons.refresh)),
+          IconButton(
+            onPressed: () async {
+              await LocalAuth.init();
+            },
+            icon: const Icon(Icons.refresh),
+          ),
           IconButton(
             onPressed: () => nav(context, const Settings()),
             icon: const Icon(Icons.settings),

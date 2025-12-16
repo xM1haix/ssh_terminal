@@ -67,13 +67,9 @@ class DB {
     );
   }
 
-  static void _action(String sql, List param) {
-    print(sql);
-    print(param);
-    _db.prepare(sql)
-      ..execute(param)
-      ..close();
-  }
+  static void _action(String sql, List param) => _db.prepare(sql)
+    ..execute(param)
+    ..close();
 
   static void _initSchema() => _db.execute(
         """CREATE TABLE IF NOT EXISTS ssh_details(id INTEGER PRIMARY KEY, name TEXT, host TEXT, port INTEGER, username TEXT, password TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, path TEXT)""",
